@@ -209,11 +209,21 @@ const mergePieceToBoard = (
 };
 
 const clearLines = (board: (TetrominoType | null)[][]): { newBoard: (TetrominoType | null)[][], linesCleared: number } => {
-  const newBoard = board.filter(row => row.some(cell => cell === null));
-  const linesCleared = BOARD_HEIGHT - newBoard.length;
-  
-  while (newBoard.length < BOARD_HEIGHT) {
-    newBoard.unshift(Array(BOARD_WIDTH).fill(null));
+  const newBoard = board.map(row => [...row]);
+  let linesCleared = 0;
+
+  // Check lines from bottom to top
+  for (let y = BOARD_HEIGHT - 1; y >= 0; y--) {
+    // Check if line is complete (no null cells)
+    if (!newBoard[y].includes(null)) {
+      // Remove the completed line
+      newBoard.splice(y, 1);
+      // Add new empty line at top
+      newBoard.unshift(Array(BOARD_WIDTH).fill(null));
+      linesCleared++;
+      // Since we removed a line, we need to check the same y index again
+      y++;
+    }
   }
 
   return { newBoard, linesCleared };
